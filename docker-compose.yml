@@ -1,0 +1,7 @@
+version: '3'
+services:
+  app:
+    build: .
+    command: 'bash -c "go build -o ./bin/app && ./bin/app"'
+    volumes:
+      - .:/go/app
