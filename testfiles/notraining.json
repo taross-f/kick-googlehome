@@ -1,0 +1,63 @@
+{
+  "ResultInfo": {
+    "Count": 1,
+    "Total": 1,
+    "Start": 1,
+    "Status": 200,
+    "Latency": 0.003186,
+    "Description": "",
+    "Copyright": "(C) Yahoo Japan Corporation."
+  },
+  "Feature": [
+    {
+      "Id": "201811231655_139.73229_35.663613",
+      "Name": "地点(139.73229,35.663613)の2018年11月23日 16時55分から60分間の天気情報",
+      "Geometry": {
+        "Type": "point",
+        "Coordinates": "139.73229,35.663613"
+      },
+      "Property": {
+        "WeatherAreaCode": 4410,
+        "WeatherList": {
+          "Weather": [
+            {
+              "Type": "observation",
+              "Date": "201811231655",
+              "Rainfall": 1.00
+            },
+            {
+              "Type": "forecast",
+              "Date": "201811231705",
+              "Rainfall": 0.00
+            },
+            {
+              "Type": "forecast",
+              "Date": "201811231715",
+              "Rainfall": 0.00
+            },
+            {
+              "Type": "forecast",
+              "Date": "201811231725",
+              "Rainfall": 0.00
+            },
+            {
+              "Type": "forecast",
+              "Date": "201811231735",
+              "Rainfall": 0.00
+            },
+            {
+              "Type": "forecast",
+              "Date": "201811231745",
+              "Rainfall": 0.00
+            },
+            {
+              "Type": "forecast",
+              "Date": "201811231755",
+              "Rainfall": 0.00
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
