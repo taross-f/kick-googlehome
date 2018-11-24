@@ -59,7 +59,7 @@ func (p *WeatherReport) Report() {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprint(URL, "?output=json&coordinates=", p.latLon, "&appid=", p.appID), nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -77,7 +77,6 @@ func (p *WeatherReport) Report() {
 		print(err)
 	}
 
-	fmt.Printf("%+v\n", result.Feature)
 	p.action(result)
 }
 
@@ -109,7 +108,8 @@ func (p *WeatherReport) action(result *YahooWeatherResult) State {
 		if nowRainfall == 0 {
 			err := os.Remove(p.rainFile)
 			if err != nil {
-				fmt.Printf("Cannot remove rainfile, %q", err)
+				log.Printf("Cannot remove rainfile, %q", err)
+				return Nothing
 			}
 			speak("このあたりのあめがやみました")
 			return StopRaining
@@ -118,7 +118,8 @@ func (p *WeatherReport) action(result *YahooWeatherResult) State {
 		if nowRainfall > 0 {
 			_, err := os.Create(p.rainFile)
 			if err != nil {
-				fmt.Printf("Cannot create rainfile, %q", err)
+				log.Printf("Cannot create rainfile, %q", err)
+				return Nothing
 			}
 			speak("このあたりであめがふりはじめました")
 			return StartRaining
@@ -129,17 +130,17 @@ func (p *WeatherReport) action(result *YahooWeatherResult) State {
 
 func speak(s string) {
 	if os.Getenv("GO_ENV") == "test" {
-		fmt.Printf("speak: %s", s)
+		log.Printf("speak: %s", s)
 		return
 	}
 	ctx := context.Background()
 	devices := homecast.LookupAndConnect(ctx)
 
 	for _, device := range devices {
-		fmt.Printf("Device: [%s:%d]%s", device.AddrV4, device.Port, device.Name)
+		log.Printf("Device: [%s:%d]%s", device.AddrV4, device.Port, device.Name)
 
 		// if err := device.Speak(ctx, s, "ja"); err != nil {
-		// 	fmt.Printf("Failed to speak: %v", err)
+		// 	log.Printf("Failed to speak: %v", err)
 		// }
 	}
 }
