@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,11 +9,12 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ikasamah/homecast"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load("./envfiles/develop.env")
+	err := loadEnv()
 	if err != nil {
 		print("Error loading .env file")
 	}
@@ -20,14 +22,15 @@ func main() {
 	wr.Report()
 }
 
-func loadEnv() {
+func loadEnv() error {
 	if os.Getenv("GO_ENV") == "" {
 		os.Setenv("GO_ENV", "develop")
 	}
-	err := godotenv.Load("./envfiles/%s.env", os.Getenv("GO_ENV"))
+	err := godotenv.Load(fmt.Sprintf("./envfiles/%s.env", os.Getenv("GO_ENV")))
 	if err != nil {
-		log.Fatal("Can't load env")
+		log.Fatalf("Can't load env, %q", err)
 	}
+	return err
 }
 
 const URL = "https://map.yahooapis.jp/weather/V1/place"
@@ -88,30 +91,57 @@ const (
 	StopRaining
 )
 
+func (s State) String() string {
+	switch s {
+	case Nothing:
+		return "Nothing"
+	case StartRaining:
+		return "StartRaining"
+	case StopRaining:
+		return "StopRaining"
+	}
+	return "Unknown"
+}
+
 func (p *WeatherReport) action(result *YahooWeatherResult) State {
 	nowRainfall := result.Feature[0].Property.WeatherList.Weather[0].Rainfall
 	if p.isRaining() {
 		if nowRainfall == 0 {
-			os.Remove(p.rainFile)
-			p.alertStoppedRaining()
+			err := os.Remove(p.rainFile)
+			if err != nil {
+				fmt.Printf("Cannot remove rainfile, %q", err)
+			}
+			speak("このあたりのあめがやみました")
 			return StopRaining
 		}
 	} else {
 		if nowRainfall > 0 {
-			os.Create(p.rainFile)
-			p.alertStartedRaining()
+			_, err := os.Create(p.rainFile)
+			if err != nil {
+				fmt.Printf("Cannot create rainfile, %q", err)
+			}
+			speak("このあたりであめがふりはじめました")
 			return StartRaining
 		}
 	}
 	return Nothing
 }
 
-func (p *WeatherReport) alertStoppedRaining() {
-	print("stop raining")
-}
+func speak(s string) {
+	if os.Getenv("GO_ENV") == "test" {
+		fmt.Printf("speak: %s", s)
+		return
+	}
+	ctx := context.Background()
+	devices := homecast.LookupAndConnect(ctx)
 
-func (p *WeatherReport) alertStartedRaining() {
-	print("start raining")
+	for _, device := range devices {
+		fmt.Printf("Device: [%s:%d]%s", device.AddrV4, device.Port, device.Name)
+
+		// if err := device.Speak(ctx, s, "ja"); err != nil {
+		// 	fmt.Printf("Failed to speak: %v", err)
+		// }
+	}
 }
 
 func (p *WeatherReport) isRaining() bool {

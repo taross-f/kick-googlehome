@@ -1,5 +1,6 @@
 package main
 
+// YahooWeatherResult is results from yolp api
 type YahooWeatherResult struct {
 	Feature []struct {
 		Geometry struct {
@@ -12,9 +13,9 @@ type YahooWeatherResult struct {
 			WeatherAreaCode int64 `json:"WeatherAreaCode"`
 			WeatherList     struct {
 				Weather []struct {
-					Date     string `json:"Date"`
-					Rainfall int64  `json:"Rainfall"`
-					Type     string `json:"Type"`
+					Date     string  `json:"Date"`
+					Rainfall float64 `json:"Rainfall"`
+					Type     string  `json:"Type"`
 				} `json:"Weather"`
 			} `json:"WeatherList"`
 		} `json:"Property"`

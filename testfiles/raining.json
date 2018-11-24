@@ -23,7 +23,7 @@
             {
               "Type": "observation",
               "Date": "201811231655",
-              "Rainfall": 0.00
+              "Rainfall": 1.00
             },
             {
               "Type": "forecast",
