@@ -111,7 +111,7 @@ func (p *WeatherReport) action(result *YahooWeatherResult) State {
 				log.Printf("Cannot remove rainfile, %q", err)
 				return Nothing
 			}
-			speak("このあたりのあめがやみました")
+			speak("このあたりのあめがやんだよ")
 			return StopRaining
 		}
 	} else {
@@ -121,7 +121,7 @@ func (p *WeatherReport) action(result *YahooWeatherResult) State {
 				log.Printf("Cannot create rainfile, %q", err)
 				return Nothing
 			}
-			speak("このあたりであめがふりはじめました")
+			speak("このあたりであめがふりはじめたよ")
 			return StartRaining
 		}
 	}
@@ -137,11 +137,11 @@ func speak(s string) {
 	devices := homecast.LookupAndConnect(ctx)
 
 	for _, device := range devices {
-		log.Printf("Device: [%s:%d]%s", device.AddrV4, device.Port, device.Name)
-
-		// if err := device.Speak(ctx, s, "ja"); err != nil {
-		// 	log.Printf("Failed to speak: %v", err)
-		// }
+		if device.Name == os.Getenv("DEVICE_NAME") {
+			if err := device.Speak(ctx, s, "ja"); err != nil {
+				log.Fatalf("Failed to speak: %v", err)
+			}
+		}
 	}
 }
 
